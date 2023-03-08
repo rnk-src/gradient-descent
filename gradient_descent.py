@@ -63,4 +63,4 @@ def cost_function(w, b, data, out):
     return cost / 2
 
 def gradient_descent ():
-    pass
+    print("trying")
