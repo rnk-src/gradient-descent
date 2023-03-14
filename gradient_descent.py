@@ -91,7 +91,14 @@ def gradient_descent(weights, bias, learning_rate, data, output, iterations):
 
 
 dataset, out, vector_w = generate_dataset(100, 5, 0.1, 15)
-weight_vector, b = gradient_descent(np.zeros(5), 0, 5.0e-7, dataset, out, 50000)
+weight_vector, b = gradient_descent(np.zeros(5), 0, 5.0e-6, dataset, out, 25000)
 
 print(f"Calculated Weight: {weight_vector},   Actual Weight: {vector_w}")
 print(f"Calculated Bias: {b},  Actual Bias: 15")
+print(linear_regression_line(weight_vector, dataset[0], b))
+print(out[0])
+
+
+"""
+To decide number of iterations, stop iterating when in the last 10 iterations, the cost has barely changed by some percentage
+"""
