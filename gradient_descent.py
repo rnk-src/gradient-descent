@@ -90,11 +90,11 @@ def gradient_descent(weights, bias, learning_rate, data, output, iterations):
     return weights, bias
 
 
-dataset, out, vector_w = generate_dataset(100, 5, 0.1, 15)
-weight_vector, b = gradient_descent(np.zeros(5), 0, 5.0e-6, dataset, out, 25000)
+dataset, out, vector_w = generate_dataset(100, 5, 0.1, 10000)
+weight_vector, b = gradient_descent(np.zeros(5), 0, 25.0e-5, dataset, out, 300000)
 
 print(f"Calculated Weight: {weight_vector},   Actual Weight: {vector_w}")
-print(f"Calculated Bias: {b},  Actual Bias: 15")
+print(f"Calculated Bias: {b},  Actual Bias: 10000")
 print(linear_regression_line(weight_vector, dataset[0], b))
 print(out[0])
 
