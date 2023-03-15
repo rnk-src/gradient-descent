@@ -1,6 +1,7 @@
 import numpy as np
 import random as rd
 
+can_change_alpha = True
 
 def generate_current_vector_w(vector_w, variability):
     current_vector_w = np.zeros(vector_w.size)
@@ -79,20 +80,28 @@ def gradient_descent_helper(weights, bias, data, output):
 
 
 def gradient_descent(weights, bias, learning_rate, data, output, iterations):
+    global current_alpha, can_change_alpha
+    cost_array = np.zeros(iterations)
     for i in range(iterations):
         new_weights_vector, new_bias = gradient_descent_helper(weights, bias, data, output)
 
         weights -= learning_rate * new_weights_vector
         bias -= learning_rate * new_bias
 
-        current_cost = cost_function(weights, bias, data, output)
-        print(f"Cost: {current_cost}")
+        cost_array[i] = cost_function(weights, bias, data, output)
+        if i > 0 and can_change_alpha:
+            if cost_array[i] < cost_array[i - 1]:
+                learning_rate = learning_rate * 2
+            elif cost_array[i] > cost_array[i - 1]:
+                learning_rate = learning_rate / 5
+                can_change_alpha = False
+
+        print(f"Cost: {cost_array[i]}")
     return weights, bias
 
 
-dataset, out, vector_w = generate_dataset(100, 5, 0.1, 10000)
-weight_vector, b = gradient_descent(np.zeros(5), 0, 25.0e-5, dataset, out, 300000)
-
+dataset, out, vector_w = generate_dataset(153, 7, 0.15, 10000)
+weight_vector, b = gradient_descent(np.zeros(7), 0, 2.0e-7, dataset, out, 250000)
 print(f"Calculated Weight: {weight_vector},   Actual Weight: {vector_w}")
 print(f"Calculated Bias: {b},  Actual Bias: 10000")
 print(linear_regression_line(weight_vector, dataset[0], b))
