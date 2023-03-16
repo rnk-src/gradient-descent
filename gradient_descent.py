@@ -1,7 +1,10 @@
 import numpy as np
 import random as rd
 
+import numpy.random
+
 can_change_alpha = True
+
 
 def generate_current_vector_w(vector_w, variability):
     current_vector_w = np.zeros(vector_w.size)
@@ -33,7 +36,7 @@ def generate_dataset(number_training_examples, number_features, variability, b):
     We now create our vector for our outputs
     """
 
-    vector_y = np.zeros(data.size)
+    vector_y = np.zeros(data.shape[0])
 
     for training_example in range(data.shape[0]):
         current_vector_w = generate_current_vector_w(vector_w, variability)
@@ -43,6 +46,17 @@ def generate_dataset(number_training_examples, number_features, variability, b):
     return data, vector_y, vector_w
 
 
+def dataset_scaled_by_max(input_dataset, input_out):
+    data = np.copy(input_dataset)
+    array_of_maxes = data.max(axis=0)
+    for i in range(data.shape[1]):
+        data[:, i] = data[:, i] / array_of_maxes[i]
+    output = np.copy(input_out)
+    max = output.max(axis=0)
+    output = output / max
+    return data, output, array_of_maxes
+
+
 def linear_regression_line(w, x, b):
     """
     Returns our predicted value of y
@@ -50,7 +64,7 @@ def linear_regression_line(w, x, b):
     return np.dot(w, x) + b
 
 
-def cost_function(w, b, data, out):
+def cost_function(w, bias, data, output):
     """
     Calculates the cost of our current w and b
     """
@@ -58,7 +72,7 @@ def cost_function(w, b, data, out):
     shape = data.shape
     rows = shape[0]
     for i in range(rows):
-        cost += (linear_regression_line(w, data[i], b) - out[i]) ** 2
+        cost += (linear_regression_line(w, data[i], bias) - output[i]) ** 2
     return cost / (2 * rows)
 
 
@@ -80,7 +94,7 @@ def gradient_descent_helper(weights, bias, data, output):
 
 
 def gradient_descent(weights, bias, learning_rate, data, output, iterations):
-    global current_alpha, can_change_alpha
+    global can_change_alpha
     cost_array = np.zeros(iterations)
     for i in range(iterations):
         new_weights_vector, new_bias = gradient_descent_helper(weights, bias, data, output)
@@ -91,22 +105,21 @@ def gradient_descent(weights, bias, learning_rate, data, output, iterations):
         cost_array[i] = cost_function(weights, bias, data, output)
         if i > 0 and can_change_alpha:
             if cost_array[i] < cost_array[i - 1]:
-                learning_rate = learning_rate * 2
+                learning_rate = learning_rate * 4
             elif cost_array[i] > cost_array[i - 1]:
                 learning_rate = learning_rate / 5
                 can_change_alpha = False
-
-        print(f"Cost: {cost_array[i]}")
+        print(f"Cost: {cost_array[i]}   Current iteration: {i + 1}")
     return weights, bias
 
 
-dataset, out, vector_w = generate_dataset(153, 7, 0.15, 10000)
-weight_vector, b = gradient_descent(np.zeros(7), 0, 2.0e-7, dataset, out, 250000)
+dataset, out, vector_w = generate_dataset(150, 5, 0.15, 500)
+data, output, array_maxes = dataset_scaled_by_max(dataset, out)
+weight_vector, b = gradient_descent(np.zeros(5), 0, 1.0e-5, data, output, 1000)
 print(f"Calculated Weight: {weight_vector},   Actual Weight: {vector_w}")
-print(f"Calculated Bias: {b},  Actual Bias: 10000")
-print(linear_regression_line(weight_vector, dataset[0], b))
-print(out[0])
-
+print(f"Calculated Bias: {b},  Actual Bias: 500")
+print(linear_regression_line(weight_vector, data[0], b))
+print(output[0])
 
 """
 To decide number of iterations, stop iterating when in the last 10 iterations, the cost has barely changed by some percentage
