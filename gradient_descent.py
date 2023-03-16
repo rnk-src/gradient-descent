@@ -49,11 +49,14 @@ def generate_dataset(number_training_examples, number_features, variability, b):
 def dataset_scaled_by_max(input_dataset, input_out):
     data = np.copy(input_dataset)
     array_of_maxes = data.max(axis=0)
+
     for i in range(data.shape[1]):
         data[:, i] = data[:, i] / array_of_maxes[i]
+
     output = np.copy(input_out)
     max = output.max(axis=0)
     output = output / max
+
     return data, output, array_of_maxes
 
 
@@ -113,13 +116,13 @@ def gradient_descent(weights, bias, learning_rate, data, output, iterations):
     return weights, bias
 
 
-dataset, out, vector_w = generate_dataset(150, 5, 0.15, 500)
+dataset, out, vector_w = generate_dataset(150, 7, 0.15, 7500)
 data, output, array_maxes = dataset_scaled_by_max(dataset, out)
-weight_vector, b = gradient_descent(np.zeros(5), 0, 1.0e-5, data, output, 1000)
-print(f"Calculated Weight: {weight_vector},   Actual Weight: {vector_w}")
+weight_vector, b = gradient_descent(np.zeros(7), 0, 1.0e-5, data, out, 500)
+print(f"Calculated Weight: {weight_vector/array_maxes},   Actual Weight: {vector_w}")
 print(f"Calculated Bias: {b},  Actual Bias: 500")
-print(linear_regression_line(weight_vector, data[0], b))
-print(output[0])
+print(linear_regression_line(weight_vector/array_maxes, dataset[0], b))
+print(out[0])
 
 """
 To decide number of iterations, stop iterating when in the last 10 iterations, the cost has barely changed by some percentage
