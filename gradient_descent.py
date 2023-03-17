@@ -1,7 +1,7 @@
-import numpy as np
 import random as rd
-
+import numpy as np
 import numpy.random
+import matplotlib.pyplot as plt
 
 can_change_alpha = True
 
@@ -113,16 +113,21 @@ def gradient_descent(weights, bias, learning_rate, data, output, iterations):
                 learning_rate = learning_rate / 5
                 can_change_alpha = False
         print(f"Cost: {cost_array[i]}   Current iteration: {i + 1}")
+    iteration_array = np.arange(1, iterations + 1, 1)
+    plt.plot(iteration_array, cost_array)
+    plt.show()
     return weights, bias
 
 
 dataset, out, vector_w = generate_dataset(150, 7, 0.15, 7500)
 data, output, array_maxes = dataset_scaled_by_max(dataset, out)
-weight_vector, b = gradient_descent(np.zeros(7), 0, 1.0e-5, data, out, 500)
+weight_vector, b = gradient_descent(np.zeros(7), 0, 1.0e-5, data, out, 400)
 print(f"Calculated Weight: {weight_vector/array_maxes},   Actual Weight: {vector_w}")
 print(f"Calculated Bias: {b},  Actual Bias: 500")
 print(linear_regression_line(weight_vector/array_maxes, dataset[0], b))
 print(out[0])
+
+
 
 """
 To decide number of iterations, stop iterating when in the last 10 iterations, the cost has barely changed by some percentage
