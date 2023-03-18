@@ -2,6 +2,8 @@ import random as rd
 import numpy as np
 import numpy.random
 import matplotlib.pyplot as plt
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
 
 can_change_alpha = True
 
@@ -114,20 +116,27 @@ def gradient_descent(weights, bias, learning_rate, data, output, iterations):
                 can_change_alpha = False
         print(f"Cost: {cost_array[i]}   Current iteration: {i + 1}")
     iteration_array = np.arange(1, iterations + 1, 1)
-    plt.plot(iteration_array, cost_array)
-    plt.show()
-    return weights, bias
+    return weights, bias, iteration_array, cost_array
 
 
-dataset, out, vector_w = generate_dataset(150, 7, 0.15, 7500)
-data, output, array_maxes = dataset_scaled_by_max(dataset, out)
-weight_vector, b = gradient_descent(np.zeros(7), 0, 1.0e-5, data, out, 400)
-print(f"Calculated Weight: {weight_vector/array_maxes},   Actual Weight: {vector_w}")
-print(f"Calculated Bias: {b},  Actual Bias: 500")
-print(linear_regression_line(weight_vector/array_maxes, dataset[0], b))
-print(out[0])
+dataset, output, vector_w = generate_dataset(150, 100, 0.15, 7500)
+data, out, array_maxes = dataset_scaled_by_max(dataset, output)
+weight_vector, b, iter_array, cost_array = gradient_descent(np.zeros(100), 0, 1.0e-5, data, output, 100000)
 
+print(f"Calculated Weight: {weight_vector / array_maxes},   Actual Weight: {vector_w}")
+print(f"Calculated Bias: {b},  Actual Bias: 7500")
+print(linear_regression_line(weight_vector / array_maxes, dataset[0], b))
+print(output[0])
 
+scaler = StandardScaler()
+scaler.fit(dataset)
+scaled_data = scaler.transform(dataset)
+pca = PCA(n_components=1)
+pca.fit(scaled_data)
+x_pca = pca.transform(scaled_data)
+
+plt.scatter(x_pca, output)
+plt.show()
 
 """
 To decide number of iterations, stop iterating when in the last 10 iterations, the cost has barely changed by some percentage
